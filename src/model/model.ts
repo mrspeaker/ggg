@@ -8,17 +8,19 @@ export type Track = {
     len: number;
 };
 
-export type GGMonId = number;
-
-export type GGDex = GGMon[];
+export type GGDex = {
+    [id: GGMonId]: GGMon;
+};
 
 export type GGMon = {
     id: GGMonId;
     stamina: number;
 };
 
+export type GGMonId = number;
+
 export type GGRacer = {
-    gg: GGMon;
+    gg_id: GGMonId;
     phys: RacePhysics;
 };
 

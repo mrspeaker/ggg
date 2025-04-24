@@ -1,50 +1,55 @@
+import "./App.css";
+
 import React from "react";
 import { useState } from "react";
-import "./App.css";
 import type { GGMon, GGRacer, Race, RacePhysics, Track } from "./model.ts";
+
+const mk_init_ggdex = (): GGDex => {
+    const dex = {
+        1: {
+            id: 1,
+            acc: 2,
+            stamina: 10,
+        },
+        2: {
+            id: 2,
+            acc: 2.2,
+            stamina: 9,
+        },
+    };
+    return dex;
+};
+const dex_to_array = (ggdex: GGDex): GGMon[] => Object.values(ggdex);
 
 const mk_racer = (gg: GGMon): GGRacer => {
     return {
-        gg,
+        gg_id: gg.id,
         phys: {
             pos: { x: 0, y: 0 },
             vel: 0,
-            acc: 2,
+            acc: gg.acc,
             stamina: gg.stamina,
         },
     };
 };
 
-const mk_init_ggs = (): GGMon[] => {
-    const ggs: GGMon[] = [];
-    ggs.push({
-        id: 1,
-        stamina: 10,
-    });
-    ggs.push({
-        id: 2,
-        stamina: 9,
-    });
-    return ggs;
-};
-
 const mk_race = (ggs: GGMon[]): Race => {
     return {
         tick: 0,
-        track: { len: 1000 },
+        track: { len: 100 },
         ggs,
     };
 };
 
 const move_gg = (ggracer: GGRacer): GGRacer => {
-    const { gg, phys } = ggracer;
+    const { gg_id, phys } = ggracer;
     let { pos, vel, acc, stamina } = phys;
 
     const newVel = vel + acc * 1 * (stamina > 0 ? 1 : 0);
     stamina = Math.max(0, stamina - 1);
 
     return {
-        gg,
+        gg_id,
         phys: {
             ...phys,
             pos: { x: pos.x + newVel, y: pos.y },
@@ -63,19 +68,18 @@ const tick_race = (race: Race): Race => {
 };
 
 function App() {
-    const [race, setRace] = useState(mk_race(mk_init_ggs().map(mk_racer)));
-    const gg = race.ggs;
-    const tick = race.tick;
+    const [dex] = useState(mk_init_ggdex());
+    const [race, setRace] = useState(mk_race(dex_to_array(dex).map(mk_racer)));
 
-    const tick_one = () => setRace(tick_race);
+    const tick = () => setRace(tick_race);
 
     return (
         <>
             <div>
-                <button onClick={tick_one}>Seconds is :{tick}</button>
+                <button onClick={tick}>Seconds is :{race.tick}</button>
             </div>
             <div>
-                <Track ggs={gg} tick={tick} />
+                <Track ggs={race.ggs} tick={race.tick} />
             </div>
         </>
     );
@@ -86,13 +90,13 @@ const Track = ({ tick, ggs }) => {
         <div>
             <div>{tick}</div>
             <div className="tracks">
-                {ggs.map((gg: GGMon) => (
-                    <div key={gg.id} className="track">
+                {ggs.map((gg: GGRacer) => (
+                    <div key={gg.gg_id} className="track">
                         <span
                             className="gg"
                             style={{ left: gg.phys.pos.x + "px" }}
                         >
-                            {gg.id}
+                            {gg.gg_id}
                         </span>
                     </div>
                 ))}
