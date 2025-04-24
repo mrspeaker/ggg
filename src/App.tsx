@@ -2,78 +2,15 @@ import "./App.css";
 
 import React from "react";
 import { useState } from "react";
-import type {
-    GGDex,
-    GGMon,
-    GGMonId,
-    GGRacer,
-    Race,
-    Track,
-} from "./model/model.ts";
+import type { GGRacer, Track } from "./model/model.ts";
 
-let gguid: GGMonId = 0;
-const mk_init_ggdex = (): GGDex => {
-    const dex: GGDex = {};
-    const g1 = mk_ggmon(gguid++, 2, 10);
-    const g2 = mk_ggmon(gguid++, 2.2, 9);
-    dex[g1.id] = g1;
-    dex[g2.id] = g2;
-    return dex;
-};
-const dex_to_array = (ggdex: GGDex): GGMon[] => Object.values(ggdex);
-
-const mk_ggmon = (id: GGMonId, acc: number, stamina: number) => ({
-    id,
-    acc,
-    stamina,
-});
-
-const mk_racer = (gg: GGMon): GGRacer => {
-    return {
-        gg_id: gg.id,
-        phys: {
-            pos: { x: 0, y: 0 },
-            vel: 0,
-            acc: gg.acc,
-            stamina: gg.stamina,
-        },
-    };
-};
-
-const mk_race = (ggs: GGRacer[]): Race => {
-    return {
-        tick: 0,
-        track: { len: 100 },
-        ggs,
-    };
-};
-
-const move_gg = (ggracer: GGRacer): GGRacer => {
-    const { gg_id, phys } = ggracer;
-    let { pos, vel, acc, stamina } = phys;
-
-    const newVel = vel + acc * 1 * (stamina > 0 ? 1 : 0);
-    stamina = Math.max(0, stamina - 1);
-    const newPos = { x: pos.x + newVel, y: pos.y };
-
-    return {
-        gg_id,
-        phys: {
-            ...phys,
-            pos: newPos,
-            vel: newVel,
-            stamina,
-        },
-    };
-};
-
-const tick_race = (race: Race): Race => {
-    return {
-        ...race,
-        tick: race.tick++,
-        ggs: race.ggs.map(move_gg),
-    };
-};
+import {
+    mk_init_ggdex,
+    mk_race,
+    dex_to_array,
+    mk_racer,
+    tick_race,
+} from "./gg.ts";
 
 function App() {
     const [dex] = useState(mk_init_ggdex());
@@ -86,27 +23,30 @@ function App() {
             <div>
                 <button onClick={tick}>Seconds is :{race.tick}</button>
             </div>
-            <div>
-                <Track ggs={race.ggs} tick={race.tick} />
-            </div>
+            <Race ggs={race.ggs} tick={race.tick} />
         </>
     );
 }
 
-const Track = ({ tick, ggs }) => {
+const Track = ({ gg }: { gg: GGRacer }) => {
+    return (
+        <div key={gg.gg_id} className="track">
+            <span className="stat">{gg.stats.mana.toFixed(2)}</span>&nbsp;
+            <span className="stat">{gg.stats.stamina.toFixed(2)}</span>
+            <span className="gg" style={{ left: gg.phys.pos.x + "px" }}>
+                {gg.gg_id}
+            </span>
+        </div>
+    );
+};
+
+const Race = ({ tick, ggs }) => {
     return (
         <div>
-            <div>{tick}</div>
+            <div>Race {tick}</div>
             <div className="tracks">
                 {ggs.map((gg: GGRacer) => (
-                    <div key={gg.gg_id} className="track">
-                        <span
-                            className="gg"
-                            style={{ left: gg.phys.pos.x + "px" }}
-                        >
-                            {gg.gg_id}
-                        </span>
-                    </div>
+                    <Track gg={gg} />
                 ))}
             </div>
         </div>

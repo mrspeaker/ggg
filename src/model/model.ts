@@ -6,6 +6,7 @@ export type GGMon = {
     id: GGMonId;
     acc: number;
     stamina: number;
+    magic: number;
 };
 
 export type GGMonId = number;
@@ -13,13 +14,18 @@ export type GGMonId = number;
 export type GGRacer = {
     gg_id: GGMonId;
     phys: RacePhysics;
+    stats: RaceStats;
 };
-
 export type RacePhysics = {
     pos: Vec;
     vel: number;
     acc: number;
+};
+
+export type RaceStats = {
+    mana: number;
     stamina: number;
+    magic: number;
 };
 
 export type Race = {
@@ -44,4 +50,8 @@ export type GGAlmanac = {
 export type Vec = {
     x: number;
     y: number;
+};
+
+export type Fact = {
+    //
 };

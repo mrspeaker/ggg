@@ -6,14 +6,14 @@
 
 
 .tracks {
-    background-color: hsl(20, 30%, 30%);
+    background-color: hsl(20, 30%, 40%);
     width: 100%;
     min-height: 100px;
 }
 
 .track {
     position: relative;
-    background-color: hsl(30, 30%, 20%);
+    background-color: hsl(30, 30%, 30%);
     height: 30px;
 }
 
@@ -23,4 +23,8 @@
     height: 28px;
     background-color: hsl(180, 40%, 40%);
     top: 0;
+}
+
+.stat {
+    background-color: hsl(190, 50%, 50%);
 }
