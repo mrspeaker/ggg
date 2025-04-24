@@ -1,0 +1,26 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+
+.tracks {
+    background-color: hsl(20, 30%, 30%);
+    width: 100%;
+    min-height: 100px;
+}
+
+.track {
+    position: relative;
+    background-color: hsl(30, 30%, 20%);
+    height: 30px;
+}
+
+.gg {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background-color: hsl(180, 40%, 20%);
+    top: 0;
+}
