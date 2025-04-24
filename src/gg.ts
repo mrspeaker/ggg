@@ -7,6 +7,7 @@ import type {
     RacePhysics,
     RaceStats,
 } from "./model/model.ts";
+import { RaceState } from "./model/model.ts";
 
 let gguid: GGMonId = 0;
 export const mk_init_ggdex = (): GGDex => {
@@ -49,6 +50,7 @@ export const mk_racer = (gg: GGMon): GGRacer => {
 
 export const mk_race = (ggs: GGRacer[]): Race => {
     return {
+        state: RaceState.RACING,
         tick: 0,
         track: { len: 100 },
         ggs,
@@ -79,24 +81,39 @@ const update_stats = (stats: RaceStats): RaceStats => {
     };
 };
 
+const effect_boost = (stats: RaceStats): RaceStats => {
+    return {
+        ...stats,
+        stamina: stats.stamina + 5,
+        mana: stats.mana - 10,
+    };
+};
+
 const ai = (
     prev_phys: Readonly<RacePhysics>,
     prev_stats: Readonly<RaceStats>,
     new_phys: RacePhysics,
     next_stats: RaceStats,
-) => {
+): string[] => {
     if (next_stats.mana > 10) {
-        next_stats.stamina += 5;
-        next_stats.mana -= 10;
+        const next = effect_boost(next_stats);
+        // Bzzzt. Mutating
+        next_stats.stamina = next.stamina;
+        next_stats.mana = next.mana;
+        return ["boost"];
     }
+    return [];
 };
 
 const update_gg = (ggracer: GGRacer): GGRacer => {
     const { gg_id, phys, stats } = ggracer;
+
     const next_phys = update_phys(phys, stats);
     const next_stats = update_stats(stats);
-
-    ai(phys, stats, next_phys, next_stats);
+    const effects = ai(phys, stats, next_phys, next_stats);
+    if (effects.length) {
+        console.log(effects);
+    }
 
     return {
         gg_id,
@@ -106,9 +123,14 @@ const update_gg = (ggracer: GGRacer): GGRacer => {
 };
 
 export const tick_race = (race: Race): Race => {
+    const { state } = race;
+    let ggs = state == RaceState.DONE ? race.ggs : race.ggs.map(update_gg);
+    let done = ggs.some((g) => g.phys.pos.x > 1048);
+
     return {
         ...race,
+        state: done ? RaceState.DONE : race.state,
         tick: race.tick++,
-        ggs: race.ggs.map(update_gg),
+        ggs,
     };
 };

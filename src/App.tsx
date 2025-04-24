@@ -18,10 +18,20 @@ function App() {
 
     const tick = () => setRace(tick_race);
 
+    const tick_5 = () => {
+        let t = tick_race(race);
+        t = tick_race(t);
+        t = tick_race(t);
+        t = tick_race(t);
+        t = tick_race(t);
+        setRace(t);
+    };
+
     return (
         <>
             <div>
                 <button onClick={tick}>Seconds is :{race.tick}</button>
+                <button onClick={tick_5}>whol race</button>
             </div>
             <Race ggs={race.ggs} tick={race.tick} />
         </>
@@ -40,7 +50,7 @@ const Track = ({ gg }: { gg: GGRacer }) => {
     );
 };
 
-const Race = ({ tick, ggs }) => {
+const Race = ({ tick, ggs }: { tick: number; ggs: GGRacer[] }) => {
     return (
         <div>
             <div>Race {tick}</div>

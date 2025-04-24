@@ -28,7 +28,17 @@ export type RaceStats = {
     magic: number;
 };
 
+export enum RaceState {
+    UNINIT,
+    PRE,
+    RACING,
+    WINNER,
+    DONE,
+    POST,
+}
+
 export type Race = {
+    state: RaceState;
     tick: number;
     track: Track;
     ggs: GGRacer[];
