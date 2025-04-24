@@ -1,19 +1,10 @@
-export type Race = {
-    tick: number;
-    track: Track;
-    ggs: GGRacer[];
-};
-
-export type Track = {
-    len: number;
-};
-
 export type GGDex = {
     [id: GGMonId]: GGMon;
 };
 
 export type GGMon = {
     id: GGMonId;
+    acc: number;
     stamina: number;
 };
 
@@ -31,9 +22,23 @@ export type RacePhysics = {
     stamina: number;
 };
 
-export type GGLife = {
+export type Race = {
+    tick: number;
+    track: Track;
+    ggs: GGRacer[];
+};
+
+export type Track = {
+    len: number;
+};
+
+export type GGLifetime = {
     gg_id: GGMonId;
     races: number;
+};
+
+export type GGAlmanac = {
+    [id: GGMonId]: GGLifetime;
 };
 
 export type Vec = {

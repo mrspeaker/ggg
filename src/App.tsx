@@ -2,24 +2,31 @@ import "./App.css";
 
 import React from "react";
 import { useState } from "react";
-import type { GGMon, GGRacer, Race, RacePhysics, Track } from "./model.ts";
+import type {
+    GGDex,
+    GGMon,
+    GGMonId,
+    GGRacer,
+    Race,
+    Track,
+} from "./model/model.ts";
 
+let gguid: GGMonId = 0;
 const mk_init_ggdex = (): GGDex => {
-    const dex = {
-        1: {
-            id: 1,
-            acc: 2,
-            stamina: 10,
-        },
-        2: {
-            id: 2,
-            acc: 2.2,
-            stamina: 9,
-        },
-    };
+    const dex: GGDex = {};
+    const g1 = mk_ggmon(gguid++, 2, 10);
+    const g2 = mk_ggmon(gguid++, 2.2, 9);
+    dex[g1.id] = g1;
+    dex[g2.id] = g2;
     return dex;
 };
 const dex_to_array = (ggdex: GGDex): GGMon[] => Object.values(ggdex);
+
+const mk_ggmon = (id: GGMonId, acc: number, stamina: number) => ({
+    id,
+    acc,
+    stamina,
+});
 
 const mk_racer = (gg: GGMon): GGRacer => {
     return {
@@ -33,7 +40,7 @@ const mk_racer = (gg: GGMon): GGRacer => {
     };
 };
 
-const mk_race = (ggs: GGMon[]): Race => {
+const mk_race = (ggs: GGRacer[]): Race => {
     return {
         tick: 0,
         track: { len: 100 },
@@ -47,12 +54,13 @@ const move_gg = (ggracer: GGRacer): GGRacer => {
 
     const newVel = vel + acc * 1 * (stamina > 0 ? 1 : 0);
     stamina = Math.max(0, stamina - 1);
+    const newPos = { x: pos.x + newVel, y: pos.y };
 
     return {
         gg_id,
         phys: {
             ...phys,
-            pos: { x: pos.x + newVel, y: pos.y },
+            pos: newPos,
             vel: newVel,
             stamina,
         },
