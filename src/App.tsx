@@ -9,29 +9,37 @@ import {
     mk_race,
     dex_to_array,
     mk_racer,
+    sim_race,
     tick_race,
 } from "./gg.ts";
 
 function App() {
-    const [dex] = useState(mk_init_ggdex());
-    const [race, setRace] = useState(mk_race(dex_to_array(dex).map(mk_racer)));
+    const [dex] = useState(mk_init_ggdex);
+    const [race, setRace] = useState(() =>
+        mk_race(dex_to_array(dex).map(mk_racer)),
+    );
+    const [whole_race] = useState(() => sim_race(dex));
+    console.log("Whole Race:", whole_race);
 
-    const tick = () => setRace(tick_race);
+    const tick = () => {
+        const next = tick_race(race);
+        whole_race[next.tick] = next; // TODO: dodge mutation
+        setRace(next);
+    };
 
-    const tick_5 = () => {
-        let t = tick_race(race);
-        t = tick_race(t);
-        t = tick_race(t);
-        t = tick_race(t);
-        t = tick_race(t);
-        setRace(t);
+    const replay = (dir = 1) => {
+        setRace((race) => {
+            const tick = Math.max(0, race.tick + dir);
+            return whole_race[tick];
+        });
     };
 
     return (
         <>
             <div>
-                <button onClick={tick}>Seconds is :{race.tick}</button>
-                <button onClick={tick_5}>whol race</button>
+                <button onClick={tick}>Sim one frame</button>
+                <button onClick={() => replay(1)}>FWD</button>
+                <button onClick={() => replay(-1)}>REV</button>
             </div>
             <Race ggs={race.ggs} tick={race.tick} />
         </>
@@ -56,7 +64,7 @@ const Race = ({ tick, ggs }: { tick: number; ggs: GGRacer[] }) => {
             <div>Race {tick}</div>
             <div className="tracks">
                 {ggs.map((gg: GGRacer) => (
-                    <Track gg={gg} />
+                    <Track gg={gg} key={gg.gg_id} />
                 ))}
             </div>
         </div>

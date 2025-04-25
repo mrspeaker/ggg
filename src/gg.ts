@@ -11,6 +11,7 @@ import { RaceState } from "./model/model.ts";
 
 let gguid: GGMonId = 0;
 export const mk_init_ggdex = (): GGDex => {
+    console.log("initing ddex");
     const dex: GGDex = {};
     const g1 = mk_ggmon(gguid++, 2, 12, 0.8);
     const g2 = mk_ggmon(gguid++, 2.2, 9, 1);
@@ -51,7 +52,7 @@ export const mk_racer = (gg: GGMon): GGRacer => {
 export const mk_race = (ggs: GGRacer[]): Race => {
     return {
         state: RaceState.RACING,
-        tick: 0,
+        tick: -1,
         track: { len: 100 },
         ggs,
     };
@@ -122,15 +123,39 @@ const update_gg = (ggracer: GGRacer): GGRacer => {
     };
 };
 
-export const tick_race = (race: Race): Race => {
-    const { state } = race;
-    let ggs = state == RaceState.DONE ? race.ggs : race.ggs.map(update_gg);
-    let done = ggs.some((g) => g.phys.pos.x > 1048);
+export const sim_race = (dex: GGDex): Race[] => {
+    console.log("simulating race...");
+    let frames = [];
+    let race = mk_race(dex_to_array(dex).map(mk_racer));
+    let ticks = 0;
+    const MAX_TIX = 1000;
+    while (race.state != RaceState.DONE && ++ticks < MAX_TIX) {
+        race = tick_race(race);
+        frames.push(race);
+    }
+    return frames;
+};
 
+export const tick_race = (race: Race): Race => {
+    const { state, tick, ggs } = race;
+    if (state == RaceState.DONE) {
+        return race;
+    }
+
+    let next_state; // = state;
+    let next_tick = tick;
+    let next_ggs = ggs.map(update_gg);
+    if (next_ggs.some((g) => g.phys.pos.x > 1048)) {
+        next_state = RaceState.DONE;
+    } else {
+        next_state = state;
+        next_tick++;
+    }
+    console.log("tick_race", next_tick);
     return {
         ...race,
-        state: done ? RaceState.DONE : race.state,
-        tick: race.tick++,
-        ggs,
+        state: next_state,
+        tick: next_tick,
+        ggs: next_ggs,
     };
 };

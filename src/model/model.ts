@@ -33,8 +33,8 @@ export enum RaceState {
     PRE,
     RACING,
     WINNER,
-    DONE,
     POST,
+    DONE,
 }
 
 export type Race = {
