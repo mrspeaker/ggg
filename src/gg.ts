@@ -15,8 +15,10 @@ export const mk_init_ggdex = (): GGDex => {
     const dex: GGDex = {};
     const g1 = mk_ggmon(gguid++, 2, 12, 0.8);
     const g2 = mk_ggmon(gguid++, 2.2, 9, 1);
+    const g3 = mk_ggmon(gguid++, 2.2, 9, 0.8);
     dex[g1.id] = g1;
     dex[g2.id] = g2;
+    dex[g3.id] = g3;
     return dex;
 };
 export const dex_to_array = (ggdex: GGDex): GGMon[] => Object.values(ggdex);

@@ -18,13 +18,21 @@ function App() {
     const [race, setRace] = useState(() =>
         mk_race(dex_to_array(dex).map(mk_racer)),
     );
+
     const [whole_race] = useState(() => sim_race(dex));
+    const [scrubVal, setScrubVal] = useState(0);
     console.log("Whole Race:", whole_race);
 
     const tick = () => {
         const next = tick_race(race);
         whole_race[next.tick] = next; // TODO: dodge mutation
         setRace(next);
+    };
+
+    const onSliderScrub = (e) => {
+        //        console.log(e.target.value);
+        setScrubVal(e.target.value);
+        setRace(whole_race[scrubVal]);
     };
 
     const replay = (dir = 1) => {
@@ -40,6 +48,13 @@ function App() {
                 <button onClick={tick}>Sim one frame</button>
                 <button onClick={() => replay(1)}>FWD</button>
                 <button onClick={() => replay(-1)}>REV</button>
+                <input
+                    type="range"
+                    min={0}
+                    max={whole_race.length - 1}
+                    defaultValue={scrubVal}
+                    onChange={onSliderScrub}
+                />
             </div>
             <Race ggs={race.ggs} tick={race.tick} />
         </>
