@@ -3,7 +3,7 @@ import type {
     GGMon,
     GGMonId,
     GGRacer,
-    Race,
+    RaceTick,
     RacePhysics,
     RaceStats,
 } from "./model/model.ts";
@@ -51,7 +51,7 @@ export const mk_racer = (gg: GGMon): GGRacer => {
     };
 };
 
-export const mk_race = (ggs: GGRacer[]): Race => {
+export const mk_race = (ggs: GGRacer[]): RaceTick => {
     return {
         state: RaceState.RACING,
         tick: -1,
@@ -125,7 +125,7 @@ const update_gg = (ggracer: GGRacer): GGRacer => {
     };
 };
 
-export const sim_race = (dex: GGDex): Race[] => {
+export const sim_race = (dex: GGDex): RaceTick[] => {
     console.log("simulating race...");
     let frames = [];
     let race = mk_race(dex_to_array(dex).map(mk_racer));
@@ -138,7 +138,7 @@ export const sim_race = (dex: GGDex): Race[] => {
     return frames;
 };
 
-export const tick_race = (race: Race): Race => {
+export const tick_race = (race: RaceTick): RaceTick => {
     const { state, tick, ggs } = race;
     if (state == RaceState.DONE) {
         return race;

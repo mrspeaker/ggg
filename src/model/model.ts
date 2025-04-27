@@ -38,6 +38,11 @@ export enum RaceState {
 }
 
 export type Race = {
+    track: Track;
+    ticks: RaceTick[];
+};
+
+export type RaceTick = {
     state: RaceState;
     tick: number;
     track: Track;
